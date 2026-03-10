@@ -54,6 +54,7 @@ const NICHE_PROBLEM = {
 };
 const LOCATIONS = ["Mumbai","Delhi","Bangalore","Hyderabad","Chennai","Pune","Kolkata","Jaipur","Ahmedabad","Lucknow","Chandigarh","Indore","Surat","Kochi","Gurgaon","Noida","Bhopal","Nagpur","Patna","Coimbatore"];
 const STAGES = ["Prospect","In Talks","Active","Done"];
+const TEAM_MEMBERS = ["Dyaus", "Manik", "BK"];
 const STAGE_CLR = {"Prospect":"#8B5CF6","In Talks":"#F59E0B","Active":"#10B981","Done":"#6B7280"};
 const CONTENT_TYPES = ["Reel","Story","Post","Carousel","Video","Collab"];
 
@@ -1249,7 +1250,7 @@ function InfCard({ inf, onTap, inPipeline, onAdd, highlight }) {
 function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, updateNote, payments, addPayment, openDetail, deliverables, updateDeliverable, discountCodes, updateDiscountCode, setTab }) {
   const [activeStage, setActiveStage] = useState(null);
   const [showAddRow, setShowAddRow] = useState(false);
-  const [newRow, setNewRow] = useState({ handle: "", name: "", followers: "", niche: "", location: "", costPerDeliv: "", numDelivs: "1", contactInfo: "" });
+  const [newRow, setNewRow] = useState({ handle: "", name: "", followers: "", niche: "", location: "", costPerDeliv: "", numDelivs: "1", contactInfo: "", assignedTo: "" });
   const [editingCell, setEditingCell] = useState(null); // {id, field}
   const [sortCol, setSortCol] = useState(null);
   const [sortDir, setSortDir] = useState("asc");
@@ -1302,10 +1303,11 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
       costPerDeliv: +newRow.costPerDeliv || 0,
       numDelivs: +newRow.numDelivs || 1,
       contactInfo: newRow.contactInfo || "",
+      assignedTo: newRow.assignedTo || "",
     };
     setPipeline(p => ({ ...p, [id]: inf }));
     if (newRow.contactInfo) updateNote(id, newRow.contactInfo);
-    setNewRow({ handle: "", name: "", followers: "", niche: "", location: "", costPerDeliv: "", numDelivs: "1", contactInfo: "" });
+    setNewRow({ handle: "", name: "", followers: "", niche: "", location: "", costPerDeliv: "", numDelivs: "1", contactInfo: "", assignedTo: "" });
     setShowAddRow(false);
   };
 
@@ -1382,7 +1384,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
       {showAddRow && (
         <div style={{ background: C.card, border: `1px solid ${C.accent}44`, borderRadius: 12, padding: 16, marginBottom: 16, animation: "fadeIn 0.2s" }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 12 }}>Add New Influencer</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr", gap: 10 }}>
             <div>
               <Label>Handle *</Label>
               <input value={newRow.handle} onChange={e => setNewRow(r => ({ ...r, handle: e.target.value }))} placeholder="@handle" style={{ ...inputBase, fontSize: 12 }} onKeyDown={e => e.key === "Enter" && handleAddRow()} />
@@ -1418,6 +1420,13 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
               <input type="number" value={newRow.numDelivs} onChange={e => setNewRow(r => ({ ...r, numDelivs: e.target.value }))} placeholder="1" style={{ ...inputBase, fontSize: 12 }} min="1" />
             </div>
             <div>
+              <Label>Assigned To</Label>
+              <select value={newRow.assignedTo} onChange={e => setNewRow(r => ({ ...r, assignedTo: e.target.value }))} style={{ ...selectBase, fontSize: 12 }}>
+                <option value="">Select...</option>
+                {TEAM_MEMBERS.map(m => <option key={m} value={m}>{m}</option>)}
+              </select>
+            </div>
+            <div>
               <Label>Contact / Notes</Label>
               <input value={newRow.contactInfo} onChange={e => setNewRow(r => ({ ...r, contactInfo: e.target.value }))} placeholder="Phone, email..." style={{ ...inputBase, fontSize: 12 }} />
             </div>
@@ -1433,7 +1442,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
       {/* Spreadsheet table */}
       <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, overflow: "hidden" }}>
         <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1600 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1700 }}>
             <thead>
               <tr>
                 <th style={{ ...thStyle, width: 40 }}>#</th>
@@ -1451,6 +1460,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                 <th style={thStyle} onClick={() => handleSort("proposedBudget")}>Total Budget{sortIcon("proposedBudget")}</th>
                 <th style={thStyle} onClick={() => handleSort("totalPaid")}>Total Paid{sortIcon("totalPaid")}</th>
                 <th style={thStyle}>Contact / Notes</th>
+                <th style={thStyle}>Assigned To</th>
                 <th style={{ ...thStyle, width: 90 }}>Actions</th>
               </tr>
             </thead>
@@ -1606,6 +1616,19 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                         </span>
                       )}
                     </td>
+                    <td style={tdStyle}>
+                      <select value={inf.assignedTo || ""} onChange={e => updateField(inf.id, "assignedTo", e.target.value)}
+                        style={{
+                          background: inf.assignedTo ? C.accent + "18" : C.bg,
+                          color: inf.assignedTo ? C.accent : C.textMuted,
+                          border: `1px solid ${inf.assignedTo ? C.accent + "44" : C.border}`, borderRadius: 6,
+                          padding: "4px 8px", fontSize: 11, fontWeight: inf.assignedTo ? 700 : 400, cursor: "pointer",
+                          outline: "none", fontFamily: "inherit"
+                        }}>
+                        <option value="">—</option>
+                        {TEAM_MEMBERS.map(m => <option key={m} value={m}>{m}</option>)}
+                      </select>
+                    </td>
                     <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
                       <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                         <button onClick={() => convertToPaid(inf)} title="Convert & log payment" style={{
@@ -1627,7 +1650,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
               })}
               {filteredEntries.length === 0 && (
                 <tr>
-                  <td colSpan={16} style={{ padding: "40px 24px", textAlign: "center", color: C.textMuted, fontSize: 13 }}>
+                  <td colSpan={17} style={{ padding: "40px 24px", textAlign: "center", color: C.textMuted, fontSize: 13 }}>
                     {entries.length === 0 ? "No influencers yet. Click \"Add Influencer\" or add from Discover tab." : "No influencers match this filter."}
                   </td>
                 </tr>
@@ -1671,7 +1694,7 @@ function RadarChart({ data, title, subtitle }) {
 
   const n = filtered.length;
   const maxVal = Math.max(...filtered.map(d => d.value));
-  const cx = 150, cy = 150, R = 110;
+  const cx = 200, cy = 200, R = 150;
   const rings = 4;
 
   // Compute points on the polygon
@@ -1683,7 +1706,7 @@ function RadarChart({ data, title, subtitle }) {
 
   const getLabelPoint = (index) => {
     const angle = (Math.PI * 2 * index) / n - Math.PI / 2;
-    const r = R + 24;
+    const r = R + 28;
     return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
   };
 
@@ -1713,8 +1736,8 @@ function RadarChart({ data, title, subtitle }) {
     <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 16 }}>
       <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>{title}</div>
       {subtitle && <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 8 }}>{subtitle}</div>}
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 20 }}>
-        <svg width={300} height={300} viewBox="0 0 300 300" style={{ flexShrink: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+        <svg width={400} height={400} viewBox="0 0 400 400" style={{ flexShrink: 0 }}>
           {/* Grid rings */}
           {gridRings.map((pts, i) => (
             <polygon key={i} points={pts} fill="none" stroke={C.border} strokeWidth={i === rings - 1 ? 1.5 : 0.7} opacity={0.5} />
@@ -1738,8 +1761,8 @@ function RadarChart({ data, title, subtitle }) {
             const anchor = Math.abs(Math.cos(angle)) < 0.1 ? "middle" : Math.cos(angle) > 0 ? "start" : "end";
             return (
               <text key={i} x={lp.x} y={lp.y} textAnchor={anchor} dominantBaseline="middle"
-                style={{ fontSize: 9, fill: C.textSec, fontFamily: "inherit", fontWeight: 600 }}>
-                {d.label.length > 12 ? d.label.slice(0, 11) + "…" : d.label}
+                style={{ fontSize: 10, fill: C.textSec, fontFamily: "inherit", fontWeight: 600 }}>
+                {d.label.length > 18 ? d.label.slice(0, 17) + "…" : d.label}
               </text>
             );
           })}
@@ -1752,12 +1775,12 @@ function RadarChart({ data, title, subtitle }) {
           ))}
         </svg>
         {/* Legend */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ minWidth: 0 }}>
           {filtered.map((d, i) => (
-            <div key={d.label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-              <div style={{ width: 10, height: 10, borderRadius: 3, background: RADAR_COLORS[i % RADAR_COLORS.length], flexShrink: 0 }} />
-              <span style={{ fontSize: 12, color: C.textSec, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.label}</span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: C.text }}>{d.value}</span>
+            <div key={d.label} style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+              <div style={{ width: 8, height: 8, borderRadius: 2, background: RADAR_COLORS[i % RADAR_COLORS.length], flexShrink: 0 }} />
+              <span style={{ fontSize: 11, color: C.textSec, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.label}</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: C.text, minWidth: 20, textAlign: "right" }}>{d.value}</span>
             </div>
           ))}
         </div>

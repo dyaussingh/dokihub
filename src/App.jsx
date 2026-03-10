@@ -25,6 +25,33 @@ const CONFIG = {
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 const NICHES = ["Food & Snacks","Fitness & Health","Fashion","Beauty","Travel","Tech","Lifestyle","Parenting","Comedy","Education","D2C Brands","Gaming","Photography","Wellness","Finance","Nutritionist","Leadership","Music","Reading","Information","Mom Content"];
+
+// ─── Niche → Problem Solved for DOKi ────────────────────────────────────────
+// problem: why this niche matters for DOKi
+// product: "Chips" / "Jerky" / "Both" — best product fit for this niche's audience
+const NICHE_PROBLEM = {
+  "Food & Snacks":    { problem: "Taste credibility; positions DOKi in snack reviews & hauls — drives trial", product: "Both" },
+  "Fitness & Health": { problem: "High-protein post-workout snack; replaces junk with clean protein", product: "Jerky" },
+  "Fashion":          { problem: "Lifestyle integration; DOKi as the trendy snack for style-conscious consumers", product: "Chips" },
+  "Beauty":           { problem: "Guilt-free snacking; fits wellness/self-care routines", product: "Chips" },
+  "Travel":           { problem: "On-the-go protein; travel-friendly snack that fits in any bag", product: "Both" },
+  "Tech":             { problem: "Young male demo; DOKi as the desk/gaming snack", product: "Chips" },
+  "Lifestyle":        { problem: "Broad integration; normalizes DOKi as an everyday go-to snack", product: "Both" },
+  "Parenting":        { problem: "Healthy kids snack; trusted by parents for protein content", product: "Chips" },
+  "Comedy":           { problem: "Viral reach & brand recall; makes DOKi fun, shareable, memorable", product: "Both" },
+  "Education":        { problem: "Smart snacking narrative; DOKi's nutrition facts explained", product: "Both" },
+  "D2C Brands":       { problem: "Cross-brand audience; reaches people already buying D2C online", product: "Both" },
+  "Gaming":           { problem: "Late-night protein fuel; replaces chips with high-protein alternative", product: "Chips" },
+  "Photography":      { problem: "Premium visual content; aesthetic product shots for ads", product: "Both" },
+  "Wellness":         { problem: "Clean eating angle; whole-food protein snack alternative to processed junk", product: "Jerky" },
+  "Finance":          { problem: "Disciplined audience; DOKi as smart investment in health", product: "Jerky" },
+  "Nutritionist":     { problem: "Expert credibility; professional endorsement of protein & nutrition profile", product: "Jerky" },
+  "Leadership":       { problem: "High-performer positioning; DOKi as fuel for ambitious people", product: "Jerky" },
+  "Music":            { problem: "Cultural relevance; DOKi associated with youth/vibe culture", product: "Chips" },
+  "Reading":          { problem: "Niche educated audience; mindful snacking companion", product: "Chips" },
+  "Information":      { problem: "Educational reach; DOKi's USP & nutrition explained to curious audience", product: "Both" },
+  "Mom Content":      { problem: "Family purchase decisions; moms recommend DOKi as healthy family snack", product: "Chips" },
+};
 const LOCATIONS = ["Mumbai","Delhi","Bangalore","Hyderabad","Chennai","Pune","Kolkata","Jaipur","Ahmedabad","Lucknow","Chandigarh","Indore","Surat","Kochi","Gurgaon","Noida","Bhopal","Nagpur","Patna","Coimbatore"];
 const STAGES = ["Prospect","In Talks","Active","Done"];
 const STAGE_CLR = {"Prospect":"#8B5CF6","In Talks":"#F59E0B","Active":"#10B981","Done":"#6B7280"};
@@ -1394,7 +1421,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
       {/* Spreadsheet table */}
       <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, overflow: "hidden" }}>
         <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1300 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1600 }}>
             <thead>
               <tr>
                 <th style={{ ...thStyle, width: 40 }}>#</th>
@@ -1403,6 +1430,8 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                 <th style={thStyle} onClick={() => handleSort("followers")}>Followers{sortIcon("followers")}</th>
                 <th style={thStyle} onClick={() => handleSort("eng")}>Eng %{sortIcon("eng")}</th>
                 <th style={thStyle} onClick={() => handleSort("niche")}>Niche{sortIcon("niche")}</th>
+                <th style={{ ...thStyle, minWidth: 200 }}>Problem Solved / Why</th>
+                <th style={thStyle}>Best Product</th>
                 <th style={thStyle} onClick={() => handleSort("location")}>Location{sortIcon("location")}</th>
                 <th style={thStyle} onClick={() => handleSort("stage")}>Stage{sortIcon("stage")}</th>
                 <th style={thStyle} onClick={() => handleSort("costPerDeliv")}>Cost/Deliv{sortIcon("costPerDeliv")}</th>
@@ -1456,6 +1485,43 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                       ) : (
                         <span style={{ cursor: "pointer" }} onClick={() => setEditingCell({ id: inf.id, field: "niche" })}>{inf.niche || "—"}</span>
                       )}
+                    </td>
+                    <td style={{ ...tdStyle, whiteSpace: "normal", maxWidth: 250, fontSize: 12, lineHeight: 1.4, color: C.textSec }}>
+                      {(() => {
+                        const np = NICHE_PROBLEM[inf.niche];
+                        if (inf.customProblem) return (
+                          editingCell?.id === inf.id && editingCell?.field === "customProblem" ? (
+                            <input autoFocus value={inf.customProblem}
+                              onChange={e => updateField(inf.id, "customProblem", e.target.value)}
+                              onBlur={() => setEditingCell(null)} onKeyDown={e => e.key === "Enter" && setEditingCell(null)}
+                              style={{ ...inputBase, padding: "4px 8px", fontSize: 11, width: "100%" }} />
+                          ) : (
+                            <span style={{ cursor: "pointer" }} onClick={() => setEditingCell({ id: inf.id, field: "customProblem" })}>{inf.customProblem}</span>
+                          )
+                        );
+                        if (np) return (
+                          <span style={{ cursor: "pointer" }} onClick={() => setEditingCell({ id: inf.id, field: "customProblem" })} title="Click to customize">{np.problem}</span>
+                        );
+                        return (
+                          editingCell?.id === inf.id && editingCell?.field === "customProblem" ? (
+                            <input autoFocus value={inf.customProblem || ""}
+                              onChange={e => updateField(inf.id, "customProblem", e.target.value)}
+                              onBlur={() => setEditingCell(null)} onKeyDown={e => e.key === "Enter" && setEditingCell(null)}
+                              style={{ ...inputBase, padding: "4px 8px", fontSize: 11, width: "100%" }} />
+                          ) : (
+                            <span style={{ cursor: "pointer", color: C.textMuted }} onClick={() => setEditingCell({ id: inf.id, field: "customProblem" })}>Click to add...</span>
+                          )
+                        );
+                      })()}
+                    </td>
+                    <td style={tdStyle}>
+                      {(() => {
+                        const np = NICHE_PROBLEM[inf.niche];
+                        const prod = inf.bestProduct || (np ? np.product : null);
+                        if (!prod) return <span style={{ color: C.textMuted }}>—</span>;
+                        const clr = prod === "Jerky" ? C.red : prod === "Chips" ? C.yellow : C.accent;
+                        return <span style={{ fontSize: 11, fontWeight: 700, color: clr, background: clr + "18", padding: "3px 8px", borderRadius: 6 }}>{prod}</span>;
+                      })()}
                     </td>
                     <td style={tdStyle}>
                       {editingCell?.id === inf.id && editingCell?.field === "location" ? (
@@ -1549,7 +1615,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
               })}
               {filteredEntries.length === 0 && (
                 <tr>
-                  <td colSpan={14} style={{ padding: "40px 24px", textAlign: "center", color: C.textMuted, fontSize: 13 }}>
+                  <td colSpan={16} style={{ padding: "40px 24px", textAlign: "center", color: C.textMuted, fontSize: 13 }}>
                     {entries.length === 0 ? "No influencers yet. Click \"Add Influencer\" or add from Discover tab." : "No influencers match this filter."}
                   </td>
                 </tr>

@@ -1519,7 +1519,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                         const np = NICHE_PROBLEM[inf.niche];
                         const prod = inf.bestProduct || (np ? np.product : null);
                         if (!prod) return <span style={{ color: C.textMuted }}>—</span>;
-                        const clr = prod === "Jerky" ? C.red : prod === "Chips" ? C.yellow : C.accent;
+                        const clr = prod === "Jerky" ? "#57997e" : prod === "Chips" ? "#ffbd59" : C.accent;
                         return <span style={{ fontSize: 11, fontWeight: 700, color: clr, background: clr + "18", padding: "3px 8px", borderRadius: 6 }}>{prod}</span>;
                       })()}
                     </td>

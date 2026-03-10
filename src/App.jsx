@@ -1360,6 +1360,18 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
         }}>{showAddRow ? "Cancel" : <>{I.plus} Add Influencer</>}</button>
       </div>
 
+      {/* Niche radar chart */}
+      {entries.length >= 3 && (() => {
+        const nicheCount = {};
+        entries.forEach(e => { const n = e.niche && e.niche !== "—" ? e.niche : "Uncategorized"; nicheCount[n] = (nicheCount[n] || 0) + 1; });
+        const radarData = Object.entries(nicheCount).map(([label, value]) => ({ label, value }));
+        return (
+          <div style={{ marginBottom: 20 }}>
+            <RadarChart data={radarData} title="Prospect Niche Distribution" subtitle={`${entries.length} prospects across ${radarData.length} niches — check if you're skewed`} />
+          </div>
+        );
+      })()}
+
       {/* Filter pills */}
       <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto", paddingBottom: 4 }}>
         <Pill label="All" count={entries.length} color={C.text} active={activeStage === null} onClick={() => setActiveStage(null)} />
@@ -1628,6 +1640,132 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
   );
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// RADAR / SPIDER CHART — Niche Distribution
+// ═══════════════════════════════════════════════════════════════════════════
+const RADAR_COLORS = ["#0095F6","#8B5CF6","#F59E0B","#10B981","#FF3040","#EC4899","#06B6D4","#F97316","#84CC16","#6366F1","#14B8A6","#E879F9","#FB923C","#22D3EE","#A3E635","#57997e","#ffbd59","#818CF8","#F472B6","#34D399","#FBBF24"];
+
+function RadarChart({ data, title, subtitle }) {
+  // data = [{ label, value, color? }] — value is count
+  if (!data || data.length === 0) return null;
+  // Filter to niches with at least 1 entry, limit to top 12 for readability
+  const filtered = data.filter(d => d.value > 0).sort((a, b) => b.value - a.value).slice(0, 12);
+  if (filtered.length < 3) {
+    // Need at least 3 points for a radar chart; show a simple bar instead
+    return (
+      <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 16 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>{title}</div>
+        {subtitle && <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 12 }}>{subtitle}</div>}
+        {filtered.map((d, i) => (
+          <div key={d.label} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+            <span style={{ fontSize: 12, color: C.textSec, width: 100, textAlign: "right" }}>{d.label}</span>
+            <div style={{ flex: 1, height: 8, background: C.bg, borderRadius: 4, overflow: "hidden" }}>
+              <div style={{ height: "100%", borderRadius: 4, background: RADAR_COLORS[i % RADAR_COLORS.length], width: `${(d.value / Math.max(...filtered.map(x => x.value))) * 100}%` }} />
+            </div>
+            <span style={{ fontSize: 12, fontWeight: 700, color: C.text, width: 24 }}>{d.value}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  const n = filtered.length;
+  const maxVal = Math.max(...filtered.map(d => d.value));
+  const cx = 150, cy = 150, R = 110;
+  const rings = 4;
+
+  // Compute points on the polygon
+  const getPoint = (index, value) => {
+    const angle = (Math.PI * 2 * index) / n - Math.PI / 2;
+    const r = (value / maxVal) * R;
+    return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+  };
+
+  const getLabelPoint = (index) => {
+    const angle = (Math.PI * 2 * index) / n - Math.PI / 2;
+    const r = R + 24;
+    return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+  };
+
+  // Grid rings
+  const gridRings = Array.from({ length: rings }, (_, i) => {
+    const r = ((i + 1) / rings) * R;
+    const points = Array.from({ length: n }, (_, j) => {
+      const angle = (Math.PI * 2 * j) / n - Math.PI / 2;
+      return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
+    }).join(" ");
+    return points;
+  });
+
+  // Data polygon
+  const dataPoints = filtered.map((d, i) => {
+    const p = getPoint(i, d.value);
+    return `${p.x},${p.y}`;
+  }).join(" ");
+
+  // Axis lines
+  const axes = filtered.map((_, i) => {
+    const p = getPoint(i, maxVal);
+    return { x2: p.x, y2: p.y };
+  });
+
+  return (
+    <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 16 }}>
+      <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>{title}</div>
+      {subtitle && <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 8 }}>{subtitle}</div>}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 20 }}>
+        <svg width={300} height={300} viewBox="0 0 300 300" style={{ flexShrink: 0 }}>
+          {/* Grid rings */}
+          {gridRings.map((pts, i) => (
+            <polygon key={i} points={pts} fill="none" stroke={C.border} strokeWidth={i === rings - 1 ? 1.5 : 0.7} opacity={0.5} />
+          ))}
+          {/* Axis lines */}
+          {axes.map((a, i) => (
+            <line key={i} x1={cx} y1={cy} x2={a.x2} y2={a.y2} stroke={C.border} strokeWidth={0.5} opacity={0.4} />
+          ))}
+          {/* Data fill */}
+          <polygon points={dataPoints} fill={C.accent + "25"} stroke={C.accent} strokeWidth={2} />
+          {/* Data points */}
+          {filtered.map((d, i) => {
+            const p = getPoint(i, d.value);
+            const clr = RADAR_COLORS[i % RADAR_COLORS.length];
+            return <circle key={i} cx={p.x} cy={p.y} r={4} fill={clr} stroke={C.card} strokeWidth={2} />;
+          })}
+          {/* Labels */}
+          {filtered.map((d, i) => {
+            const lp = getLabelPoint(i);
+            const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+            const anchor = Math.abs(Math.cos(angle)) < 0.1 ? "middle" : Math.cos(angle) > 0 ? "start" : "end";
+            return (
+              <text key={i} x={lp.x} y={lp.y} textAnchor={anchor} dominantBaseline="middle"
+                style={{ fontSize: 9, fill: C.textSec, fontFamily: "inherit", fontWeight: 600 }}>
+                {d.label.length > 12 ? d.label.slice(0, 11) + "…" : d.label}
+              </text>
+            );
+          })}
+          {/* Ring value labels */}
+          {Array.from({ length: rings }, (_, i) => (
+            <text key={i} x={cx + 4} y={cy - ((i + 1) / rings) * R + 3}
+              style={{ fontSize: 8, fill: C.textMuted, fontFamily: "inherit" }}>
+              {Math.round(maxVal * (i + 1) / rings)}
+            </text>
+          ))}
+        </svg>
+        {/* Legend */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {filtered.map((d, i) => (
+            <div key={d.label} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <div style={{ width: 10, height: 10, borderRadius: 3, background: RADAR_COLORS[i % RADAR_COLORS.length], flexShrink: 0 }} />
+              <span style={{ fontSize: 12, color: C.textSec, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.label}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: C.text }}>{d.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Pill({ label, count, color, active, onClick }) {
   return (
     <button onClick={onClick} style={{
@@ -1823,6 +1961,21 @@ function SpendTab({ pipeline, payments, addPayment, removePayment, updatePayment
         <Stat label="Avg CPE" value={avgCPE > 0 ? inr(Math.round(avgCPE)) : "—"} color={C.yellow} />
         <Stat label="ROI" value={totalSpend > 0 ? roi.toFixed(1)+"%" : "—"} color={roi>=0?C.green:C.red} />
       </div>
+
+      {/* Niche Distribution Radar Chart */}
+      {payments.length >= 3 && (() => {
+        const nicheCount = {};
+        payments.forEach(p => {
+          const n = p.niche && p.niche !== "—" ? p.niche : "Uncategorized";
+          nicheCount[n] = (nicheCount[n] || 0) + 1;
+        });
+        const radarData = Object.entries(nicheCount).map(([label, value]) => ({ label, value }));
+        return (
+          <div style={{ marginBottom: 20 }}>
+            <RadarChart data={radarData} title="Paid Niche Distribution" subtitle={`${payments.length} paid influencers across ${radarData.length} niches — check if you're skewed`} />
+          </div>
+        );
+      })()}
 
       {/* Budget Allocation — Ideal vs Actual */}
       <button onClick={() => setShowBudget(!showBudget)} style={{

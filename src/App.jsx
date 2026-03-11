@@ -1374,6 +1374,56 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
         );
       })()}
 
+      {/* Tier distribution bar chart */}
+      {entries.length > 0 && (() => {
+        const tierCount = { Nano: 0, Micro: 0, Mid: 0, Buffer: 0 };
+        const tierBudget = { Nano: 0, Micro: 0, Mid: 0, Buffer: 0 };
+        entries.forEach(e => {
+          const f = e.followers || 0;
+          const budget = (+e.costPerDeliv || 0) * (+e.numDelivs || 0);
+          if (f < 10000) { tierCount.Nano++; tierBudget.Nano += budget; }
+          else if (f < 20000) { tierCount.Micro++; tierBudget.Micro += budget; }
+          else if (f < 40000) { tierCount.Mid++; tierBudget.Mid += budget; }
+          else { tierCount.Buffer++; tierBudget.Buffer += budget; }
+        });
+        const maxCount = Math.max(...Object.values(tierCount), 1);
+        return (
+          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 16, marginBottom: 20 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700 }}>Pipeline by Tier</div>
+                <div style={{ fontSize: 11, color: C.textMuted }}>{entries.length} prospects — how your pipeline stacks up by follower size</div>
+              </div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12 }}>
+              {BUDGET_TIERS.map(tier => {
+                const count = tierCount[tier.label] || 0;
+                const budget = tierBudget[tier.label] || 0;
+                const pct = entries.length > 0 ? Math.round((count / entries.length) * 100) : 0;
+                const barH = maxCount > 0 ? Math.max(8, (count / maxCount) * 120) : 0;
+                return (
+                  <div key={tier.label} style={{ textAlign: "center" }}>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, marginBottom: 8 }}>
+                      <div style={{ height: 130, display: "flex", flexDirection: "column", justifyContent: "flex-end", alignItems: "center" }}>
+                        <span style={{ fontSize: 18, fontWeight: 800, color: tier.color }}>{count}</span>
+                        <div style={{
+                          width: 48, height: barH, background: `linear-gradient(180deg, ${tier.color}, ${tier.color}66)`,
+                          borderRadius: "6px 6px 2px 2px", transition: "height 0.4s ease"
+                        }} />
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: tier.color }}>{tier.label}</div>
+                    <div style={{ fontSize: 10, color: C.textMuted, marginTop: 2 }}>{tier.range}</div>
+                    <div style={{ fontSize: 10, color: C.textMuted, marginTop: 2 }}>{pct}% of pipeline</div>
+                    {budget > 0 && <div style={{ fontSize: 10, color: C.textSec, marginTop: 2 }}>{inr(budget)} proposed</div>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Filter pills */}
       <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto", paddingBottom: 4 }}>
         <Pill label="All" count={entries.length} color={C.text} active={activeStage === null} onClick={() => setActiveStage(null)} />
@@ -1694,7 +1744,10 @@ function RadarChart({ data, title, subtitle }) {
 
   const n = filtered.length;
   const maxVal = Math.max(...filtered.map(d => d.value));
-  const cx = 200, cy = 200, R = 150;
+  const pad = 60; // padding for labels outside the polygon
+  const R = 140;
+  const cx = pad + R, cy = pad + R;
+  const svgSize = (pad + R) * 2;
   const rings = 4;
 
   // Compute points on the polygon
@@ -1736,8 +1789,8 @@ function RadarChart({ data, title, subtitle }) {
     <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: 16 }}>
       <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>{title}</div>
       {subtitle && <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 8 }}>{subtitle}</div>}
-      <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-        <svg width={400} height={400} viewBox="0 0 400 400" style={{ flexShrink: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 24, flexWrap: "wrap" }}>
+        <svg viewBox={`0 0 ${svgSize} ${svgSize}`} style={{ width: "100%", maxWidth: 420, flexShrink: 0 }}>
           {/* Grid rings */}
           {gridRings.map((pts, i) => (
             <polygon key={i} points={pts} fill="none" stroke={C.border} strokeWidth={i === rings - 1 ? 1.5 : 0.7} opacity={0.5} />

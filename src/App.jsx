@@ -640,6 +640,32 @@ export default function App() {
       save("doki_notes", seed.notes);
       return seed.pipeline;
     }
+    // Auto-inject new prospects that aren't already in the pipeline
+    const handles = Object.values(saved).map(e => e.handle);
+    const missing = SEED_PROSPECTS.filter(sp => !handles.includes(sp.handle));
+    if (missing.length > 0) {
+      const updated = { ...saved };
+      missing.forEach((sp, i) => {
+        const id = "inject_" + Date.now() + "_" + i;
+        updated[id] = {
+          id, handle: sp.handle, name: sp.name || sp.handle.replace("@",""),
+          followers: sp.followers || 0, eng: 0, avgLikes: 0, avgComments: 0,
+          niche: sp.niche || "—", location: "—", posts: 0, following: 0,
+          similarity: 0, verified: false, growth: 0,
+          avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(sp.handle)}&backgroundColor=262626&textColor=ffffff&fontSize=36`,
+          stage: "Prospect", addedAt: Date.now(),
+          costPerDeliv: sp.costPerDeliv || 0, numDelivs: sp.numDelivs || 0,
+          assignedTo: "",
+        };
+        if (sp.note) {
+          const n = load("doki_notes", {});
+          n[id] = sp.note;
+          save("doki_notes", n);
+        }
+      });
+      save("doki_pipeline", updated);
+      return updated;
+    }
     return saved;
   });
   const [payments, setPayments] = useState(() => load("doki_payments", []));

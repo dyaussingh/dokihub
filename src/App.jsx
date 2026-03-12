@@ -606,7 +606,7 @@ const SEED_PROSPECTS = [
   { handle: "@gauravmakkar2", name: "Gaurav Makkar", followers: 46500, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@myliteraryexperiment", name: "Myliteraryexperiment", followers: 88000, niche: "Reading", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@thefitmomedit", name: "TheFitMomEdit", followers: 10000, niche: "Mom Content", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@_sangym_", name: "Sanjum Singh Dhaliwal", followers: 20000, niche: "Comedy", costPerDeliv: 0, numDelivs: 0, note: "Verified ✅ · UCLA/Amritsar · Viral reels (1M-5M views) · Food highlight · Huge reach for 20K — high engagement ~10%" },
+  { handle: "@_sangym_", name: "Sanjum Singh Dhaliwal", followers: 20000, eng: 25, niche: "Comedy", costPerDeliv: 0, numDelivs: 0, note: "Verified ✅ · UCLA/Amritsar · Viral reels (1M-5M views) · Food highlight · Avg ~900K views on 20K followers" },
 ];
 
 function buildSeedPipeline() {
@@ -616,7 +616,7 @@ function buildSeedPipeline() {
     const id = "seed_" + i;
     pipeline[id] = {
       id, handle: p.handle, name: p.name, followers: p.followers,
-      eng: 0, avgLikes: 0, avgComments: 0,
+      eng: p.eng || 0, avgLikes: 0, avgComments: 0,
       niche: p.niche, location: "—",
       posts: 0, following: 0, similarity: 0, verified: false, growth: 0,
       avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(p.name)}&backgroundColor=262626&textColor=ffffff&fontSize=36`,
@@ -649,7 +649,7 @@ export default function App() {
         const id = "inject_" + Date.now() + "_" + i;
         updated[id] = {
           id, handle: sp.handle, name: sp.name || sp.handle.replace("@",""),
-          followers: sp.followers || 0, eng: 0, avgLikes: 0, avgComments: 0,
+          followers: sp.followers || 0, eng: sp.eng || 0, avgLikes: 0, avgComments: 0,
           niche: sp.niche || "—", location: "—", posts: 0, following: 0,
           similarity: 0, verified: false, growth: 0,
           avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(sp.handle)}&backgroundColor=262626&textColor=ffffff&fontSize=36`,

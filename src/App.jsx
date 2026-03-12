@@ -606,6 +606,7 @@ const SEED_PROSPECTS = [
   { handle: "@gauravmakkar2", name: "Gaurav Makkar", followers: 46500, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@myliteraryexperiment", name: "Myliteraryexperiment", followers: 88000, niche: "Reading", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@thefitmomedit", name: "TheFitMomEdit", followers: 10000, niche: "Mom Content", costPerDeliv: 0, numDelivs: 0 },
+  { handle: "@_sangym_", name: "Sanjum Singh Dhaliwal", followers: 20000, niche: "Comedy", costPerDeliv: 0, numDelivs: 0, note: "Verified ✅ · UCLA/Amritsar · Viral reels (1M-5M views) · Food highlight · Huge reach for 20K — high engagement ~10%" },
 ];
 
 function buildSeedPipeline() {

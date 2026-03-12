@@ -579,7 +579,7 @@ function AuthScreen({ onAuth }) {
 // ═══════════════════════════════════════════════════════════════════════════
 // ─── Seed Prospects ──────────────────────────────────────────────────────────
 const SEED_PROSPECTS = [
-  { handle: "@ishaanfit", name: "Ishaan Fit", followers: 2200, niche: "Comedy", costPerDeliv: 10000, numDelivs: 1 },
+  { handle: "@ishaanfit", name: "Ishaan Fit", followers: 2200, eng: 15, niche: "Fitness & Health", costPerDeliv: 10000, numDelivs: 1, note: "Gym POVs + fitness tips + running content · Viral reels (2.6M, 536K, 333K) · Huge reach for nano account" },
   { handle: "@sanikavaid", name: "Sanika Vaid", followers: 8000, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@gauravmakkar", name: "Gaurav Makkar", followers: 46200, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@coachamogh", name: "Coach Amogh", followers: 2200, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
@@ -641,28 +641,43 @@ export default function App() {
       return seed.pipeline;
     }
     // Auto-inject new prospects that aren't already in the pipeline
+    let dirty = false;
+    const updated = { ...saved };
+    // Auto-inject missing prospects
     const handles = Object.values(saved).map(e => e.handle);
     const missing = SEED_PROSPECTS.filter(sp => !handles.includes(sp.handle));
-    if (missing.length > 0) {
-      const updated = { ...saved };
-      missing.forEach((sp, i) => {
-        const id = "inject_" + Date.now() + "_" + i;
-        updated[id] = {
-          id, handle: sp.handle, name: sp.name || sp.handle.replace("@",""),
-          followers: sp.followers || 0, eng: sp.eng || 0, avgLikes: 0, avgComments: 0,
-          niche: sp.niche || "—", location: "—", posts: 0, following: 0,
-          similarity: 0, verified: false, growth: 0,
-          avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(sp.handle)}&backgroundColor=262626&textColor=ffffff&fontSize=36`,
-          stage: "Prospect", addedAt: Date.now(),
-          costPerDeliv: sp.costPerDeliv || 0, numDelivs: sp.numDelivs || 0,
-          assignedTo: "",
-        };
+    missing.forEach((sp, i) => {
+      dirty = true;
+      const id = "inject_" + Date.now() + "_" + i;
+      updated[id] = {
+        id, handle: sp.handle, name: sp.name || sp.handle.replace("@",""),
+        followers: sp.followers || 0, eng: sp.eng || 0, avgLikes: 0, avgComments: 0,
+        niche: sp.niche || "—", location: "—", posts: 0, following: 0,
+        similarity: 0, verified: false, growth: 0,
+        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(sp.handle)}&backgroundColor=262626&textColor=ffffff&fontSize=36`,
+        stage: "Prospect", addedAt: Date.now(),
+        costPerDeliv: sp.costPerDeliv || 0, numDelivs: sp.numDelivs || 0,
+        assignedTo: "",
+      };
+      if (sp.note) {
+        const n = load("doki_notes", {});
+        n[id] = sp.note;
+        save("doki_notes", n);
+      }
+    });
+    // Sync eng% and niche from seed data for existing entries
+    SEED_PROSPECTS.forEach(sp => {
+      const entry = Object.values(updated).find(e => e.handle === sp.handle);
+      if (entry) {
+        if (sp.eng && (!entry.eng || entry.eng === 0)) { entry.eng = sp.eng; dirty = true; }
+        if (sp.niche && entry.niche !== sp.niche && (entry.niche === "—" || entry.niche === "Comedy" && sp.niche !== "Comedy")) { entry.niche = sp.niche; dirty = true; }
         if (sp.note) {
           const n = load("doki_notes", {});
-          n[id] = sp.note;
-          save("doki_notes", n);
+          if (!n[entry.id]) { n[entry.id] = sp.note; save("doki_notes", n); }
         }
-      });
+      }
+    });
+    if (dirty) {
       save("doki_pipeline", updated);
       return updated;
     }

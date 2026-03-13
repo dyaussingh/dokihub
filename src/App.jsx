@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { fbSave, fbListen } from "./firebase";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    DOKI — INFLUENCER COMMAND CENTER
@@ -834,11 +835,43 @@ export default function App() {
   const [selectedInf, setSelectedInf] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
 
-  useEffect(() => save("doki_pipeline", pipeline), [pipeline]);
-  useEffect(() => save("doki_payments", payments), [payments]);
-  useEffect(() => save("doki_notes", notes), [notes]);
-  useEffect(() => save("doki_deliverables", deliverables), [deliverables]);
-  useEffect(() => save("doki_codes", discountCodes), [discountCodes]);
+  // ─── Firebase real-time sync ─────────────────────────────────────────────
+  const skipRemote = useRef(false);   // prevent echo when we write
+  const fbReady = useRef(false);      // don't overwrite until first snapshot
+
+  // Save to localStorage + Firebase on every change
+  useEffect(() => { save("doki_pipeline", pipeline);     if (fbReady.current) { skipRemote.current = true; fbSave("pipeline", pipeline); } }, [pipeline]);
+  useEffect(() => { save("doki_payments", payments);     if (fbReady.current) { skipRemote.current = true; fbSave("payments", payments); } }, [payments]);
+  useEffect(() => { save("doki_notes", notes);           if (fbReady.current) { skipRemote.current = true; fbSave("notes", notes); } }, [notes]);
+  useEffect(() => { save("doki_deliverables", deliverables); if (fbReady.current) { skipRemote.current = true; fbSave("deliverables", deliverables); } }, [deliverables]);
+  useEffect(() => { save("doki_codes", discountCodes);   if (fbReady.current) { skipRemote.current = true; fbSave("codes", discountCodes); } }, [discountCodes]);
+
+  // Listen for real-time changes from other team members
+  useEffect(() => {
+    const unsub = fbListen((data) => {
+      if (!fbReady.current) {
+        // First snapshot — seed Firestore if it's empty, or pull remote data
+        fbReady.current = true;
+        if (!data.pipeline || Object.keys(data.pipeline).length === 0) {
+          // Firestore is empty — push local data up (first-time migration)
+          fbSave("pipeline", pipeline);
+          fbSave("payments", payments);
+          fbSave("notes", notes);
+          fbSave("deliverables", deliverables);
+          fbSave("codes", discountCodes);
+          return;
+        }
+      }
+      if (skipRemote.current) { skipRemote.current = false; return; }
+      // Apply remote changes
+      if (data.pipeline)     setPipeline(data.pipeline);
+      if (data.payments)     setPayments(data.payments);
+      if (data.notes)        setNotes(data.notes);
+      if (data.deliverables) setDeliverables(data.deliverables);
+      if (data.codes)        setDiscountCodes(data.codes);
+    });
+    return unsub;
+  }, []);
 
   const addToPipeline = useCallback(inf => {
     setPipeline(p => ({ ...p, [inf.id]: { ...inf, stage: "Prospect", addedAt: Date.now() } }));

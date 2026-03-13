@@ -1565,11 +1565,16 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                     onMouseEnter={e => e.currentTarget.style.background = C.accent + "08"}
                     onMouseLeave={e => e.currentTarget.style.background = idx % 2 === 0 ? "transparent" : C.bg + "44"}>
                     <td style={{ ...tdStyle, color: C.textMuted, fontSize: 11 }}>{idx + 1}</td>
-                    <td style={{ ...tdStyle, cursor: "pointer" }} onClick={() => openDetail(inf)}>
+                    <td style={tdStyle}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <img src={inf.avatar} style={{ width: 28, height: 28, borderRadius: "50%", background: C.bg }} alt=""
                           onError={e => { e.target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${inf.handle}&backgroundColor=262626&textColor=ffffff`; }} />
-                        <span style={{ fontWeight: 600, color: C.accent }}>{inf.handle}</span>
+                        <a href={`https://instagram.com/${inf.handle.replace("@","")}`} target="_blank" rel="noopener noreferrer"
+                          style={{ fontWeight: 600, color: C.accent, textDecoration: "none" }}
+                          onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
+                          onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}>
+                          {inf.handle}
+                        </a>
                         {inf.verified && I.verified}
                       </div>
                     </td>
@@ -1614,7 +1619,14 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                           )
                         );
                         if (np) return (
-                          <span style={{ cursor: "pointer" }} onClick={() => setEditingCell({ id: inf.id, field: "customProblem" })} title="Click to customize">{np.problem}</span>
+                          editingCell?.id === inf.id && editingCell?.field === "customProblem" ? (
+                            <input autoFocus defaultValue={np.problem}
+                              onChange={e => updateField(inf.id, "customProblem", e.target.value)}
+                              onBlur={() => setEditingCell(null)} onKeyDown={e => e.key === "Enter" && setEditingCell(null)}
+                              style={{ ...inputBase, padding: "4px 8px", fontSize: 11, width: "100%" }} />
+                          ) : (
+                            <span style={{ cursor: "pointer" }} onClick={() => setEditingCell({ id: inf.id, field: "customProblem" })} title="Click to edit">{np.problem}</span>
+                          )
                         );
                         return (
                           editingCell?.id === inf.id && editingCell?.field === "customProblem" ? (

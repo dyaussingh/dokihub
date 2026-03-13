@@ -579,31 +579,26 @@ function AuthScreen({ onAuth }) {
 // ═══════════════════════════════════════════════════════════════════════════
 // ─── Seed Prospects ──────────────────────────────────────────────────────────
 const SEED_PROSPECTS = [
-  { handle: "@ishaanfit", name: "Ishaan Fit", followers: 2200, eng: 15, niche: "Fitness & Health", costPerDeliv: 10000, numDelivs: 1, note: "Gym POVs + fitness tips + running content · Viral reels (2.6M, 536K, 333K) · Huge reach for nano account" },
+  { handle: "@ishaaan.fit", name: "Ishaan Fit", followers: 2200, eng: 15, niche: "Fitness & Health", costPerDeliv: 10000, numDelivs: 1, note: "Gym POVs + fitness tips + running content · Viral reels (2.6M, 536K, 333K) · Huge reach for nano account" },
   { handle: "@sanikavaid", name: "Sanika Vaid", followers: 8000, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@gauravmakkar", name: "Gaurav Makkar", followers: 46200, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0 },
+  { handle: "@gauravovereats", name: "Gaurav Makkar", followers: 46200, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@coachamogh", name: "Coach Amogh", followers: 2200, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@nilukattan", name: "Nilu Kattan", followers: 12200, niche: "—", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@harshkanwar", name: "Harsh Kanwar", followers: 75000, niche: "Fitness & Health", costPerDeliv: 50000, numDelivs: 1, note: "Pre-negotiated" },
-  { handle: "@siddhantshetty", name: "Siddhant Shetty", followers: 18000, niche: "Comedy", costPerDeliv: 18000, numDelivs: 1, note: "Pre-negotiated" },
-  { handle: "@avinashvaibhav", name: "Avinash Vaibhav", followers: 23600, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@nutritionistminakshi", name: "Nutritionist Minakshi", followers: 0, niche: "Nutritionist", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@aastthhassidana", name: "Aasttha Ssidana", followers: 118000, niche: "Lifestyle", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@sheenaroy", name: "Sheena Roy", followers: 92200, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@khushichhabra", name: "Khushi Chhabra", followers: 150000, niche: "Nutritionist", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@melroserebeiro", name: "Melrose Rebeiro", followers: 76500, niche: "Leadership", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@chaardiwari", name: "Chaar Diwari", followers: 404000, niche: "Music", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@evolvewithneerajmehta", name: "Evolve with Neeraj Mehta", followers: 14600, niche: "Mom Content", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@onellarodriguez", name: "Onella Rodriguez", followers: 321000, niche: "Lifestyle", costPerDeliv: 0, numDelivs: 0 },
+  { handle: "@drharshkanwar", name: "Harsh Kanwar", followers: 75000, niche: "Fitness & Health", costPerDeliv: 50000, numDelivs: 1, note: "Pre-negotiated" },
+  { handle: "@sid.shettyyy", name: "Siddhant Shetty", followers: 18000, niche: "Comedy", costPerDeliv: 18000, numDelivs: 1, note: "Pre-negotiated" },
+  { handle: "@ctrlplusrage", name: "Avinash Vaibhav", followers: 23600, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
+  { handle: "@aasttha.s", name: "Aasttha Ssidana", followers: 118000, niche: "Lifestyle", costPerDeliv: 0, numDelivs: 0 },
+  { handle: "@sheenafit", name: "Sheena Roy", followers: 92200, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
+  { handle: "@nutritionwith_khushi", name: "Khushi Chhabra", followers: 150000, niche: "Nutritionist", costPerDeliv: 0, numDelivs: 0 },
+  { handle: "@melrose_rebeiro", name: "Melrose Rebeiro", followers: 76500, niche: "Leadership", costPerDeliv: 0, numDelivs: 0 },
+  { handle: "@chaardiwaari", name: "Chaar Diwari", followers: 404000, niche: "Music", costPerDeliv: 0, numDelivs: 0 },
+  { handle: "@nutellaonella", name: "Onella Rodriguez", followers: 321000, niche: "Lifestyle", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@ashnamalik", name: "Ashna Malik", followers: 7000, niche: "Music", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@suhanananda", name: "Suhana Nanda", followers: 65000, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@aditiwhy", name: "Aditiwhy", followers: 4000, niche: "Information", costPerDeliv: 0, numDelivs: 0 },
+  { handle: "@aditiwhyy", name: "Aditiwhy", followers: 4000, niche: "Information", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@malikkaadvani", name: "Malikka Advani", followers: 5000, niche: "Comedy", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@vansh.mor", name: "Vansh Mor", followers: 9800, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@suryamarwaha", name: "Surya Marwaha", followers: 2400, niche: "Comedy", costPerDeliv: 0, numDelivs: 0 },
+  { handle: "@vanshmor", name: "Vansh Mor", followers: 9800, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@taashithukrall", name: "Taashi Thukrall", followers: 15000, niche: "Comedy", costPerDeliv: 0, numDelivs: 0, note: "Ex-Subko" },
-  { handle: "@krishnahuja", name: "Krishn Ahuja", followers: 28000, niche: "Comedy", costPerDeliv: 0, numDelivs: 0, note: "Impression comedy" },
-  { handle: "@gauravmakkar2", name: "Gaurav Makkar", followers: 46500, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0 },
+  { handle: "@krishnahujaa", name: "Krishn Ahuja", followers: 28000, niche: "Comedy", costPerDeliv: 0, numDelivs: 0, note: "Impression comedy" },
   { handle: "@myliteraryexperiment", name: "Myliteraryexperiment", followers: 88000, niche: "Reading", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@thefitmomedit", name: "TheFitMomEdit", followers: 10000, niche: "Mom Content", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@_sangym_", name: "Sanjum Singh Dhaliwal", followers: 20000, eng: 25, niche: "Comedy", costPerDeliv: 0, numDelivs: 0, note: "Verified ✅ · UCLA/Amritsar · Viral reels (1M-5M views) · Food highlight · Avg ~900K views on 20K followers" },
@@ -640,11 +635,26 @@ export default function App() {
       save("doki_notes", seed.notes);
       return seed.pipeline;
     }
-    // Auto-inject new prospects that aren't already in the pipeline
+    // Rename old handles to corrected ones
+    const HANDLE_RENAMES = {
+      "@ishaanfit":"@ishaaan.fit", "@gauravmakkar":"@gauravovereats", "@harshkanwar":"@drharshkanwar",
+      "@siddhantshetty":"@sid.shettyyy", "@avinashvaibhav":"@ctrlplusrage", "@aastthhassidana":"@aasttha.s",
+      "@sheenaroy":"@sheenafit", "@khushichhabra":"@nutritionwith_khushi", "@melroserebeiro":"@melrose_rebeiro",
+      "@chaardiwari":"@chaardiwaari", "@onellarodriguez":"@nutellaonella", "@aditiwhy":"@aditiwhyy",
+      "@vansh.mor":"@vanshmor", "@krishnahuja":"@krishnahujaa",
+    };
     let dirty = false;
     const updated = { ...saved };
+    // Apply handle renames
+    Object.values(updated).forEach(entry => {
+      if (HANDLE_RENAMES[entry.handle]) {
+        entry.handle = HANDLE_RENAMES[entry.handle];
+        entry.avatar = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(entry.handle)}&backgroundColor=262626&textColor=ffffff&fontSize=36`;
+        dirty = true;
+      }
+    });
     // Auto-inject missing prospects
-    const handles = Object.values(saved).map(e => e.handle);
+    const handles = Object.values(updated).map(e => e.handle);
     const missing = SEED_PROSPECTS.filter(sp => !handles.includes(sp.handle));
     missing.forEach((sp, i) => {
       dirty = true;

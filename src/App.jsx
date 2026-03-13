@@ -602,6 +602,22 @@ const SEED_PROSPECTS = [
   { handle: "@myliteraryexperiment", name: "Myliteraryexperiment", followers: 88000, niche: "Reading", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@thefitmomedit", name: "TheFitMomEdit", followers: 10000, niche: "Mom Content", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@_sangym_", name: "Sanjum Singh Dhaliwal", followers: 20000, eng: 25, niche: "Comedy", costPerDeliv: 0, numDelivs: 0, note: "Verified ✅ · UCLA/Amritsar · Viral reels (1M-5M views) · Food highlight · Avg ~900K views on 20K followers" },
+  // ── From DOKi Follower Analysis (Excel) ──
+  { handle: "@janakikrishnan21", name: "Janaki Krishnan", followers: 13297, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0, note: "Actor + foodie/baker · Follows DOKi · Business: thehazeleyedhippie@gmail.com" },
+  { handle: "@tejpandit_ifbbpro", name: "Tejaswini Pandit", followers: 17368, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0, note: "IFBB Pro athlete · Nutrition focus · Coach" },
+  { handle: "@lost.and.hungry", name: "Vinayak G", followers: 56321, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0, note: "Food photographer · Visual content creator" },
+  { handle: "@coachchaitanya", name: "Chaitanya Bhutani", followers: 46701, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0, note: "Fitness coach · Protein audience" },
+  { handle: "@trainwithguneet", name: "Guneet", followers: 98062, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0, note: "Online fitness coach · Large reach" },
+  { handle: "@annam_food_vlog", name: "Mohammed Ansari", followers: 22358, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0, note: "Food vlogger · Reel creator · YouTube presence" },
+  { handle: "@itskrystallllll", name: "Krystal D", followers: 12777, niche: "Nutritionist", costPerDeliv: 0, numDelivs: 0, note: "Nutrition + fitness combo content" },
+  { handle: "@theblogofdoctorsuz", name: "Dr. Susan Roy", followers: 13988, niche: "Nutritionist", costPerDeliv: 0, numDelivs: 0, note: "Doctor (MDS) · Food & fitness reviewer · Authority content" },
+  { handle: "@foodtrendsthrumylens", name: "Nitin Jagga", followers: 17250, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0, note: "Food trends content creator" },
+  { handle: "@radha_thefunnyfoodie", name: "Radha", followers: 35585, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0, note: "Funny foodie · Viral potential" },
+  { handle: "@sonalikabhadouria", name: "Sonalika", followers: 11626, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0, note: "Chef · Baker · Digital creator" },
+  { handle: "@deekshakaulgaitonde", name: "Deeksha Gaitonde", followers: 11756, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0, note: "Fitness + yoga coach" },
+  { handle: "@sne_hahahaa", name: "Sneha Roy", followers: 9184, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0, note: "Food + cook + fitness crossover — perfect DOKi fit" },
+  { handle: "@ayeshaadlakha", name: "Ayesha Kapoor Adlakha", followers: 427516, niche: "Lifestyle", costPerDeliv: 0, numDelivs: 0, note: "Emcee + actor + creator · Massive reach · Follows DOKi" },
+  { handle: "@theanurags", name: "Anurag Salgaonkar", followers: 146531, niche: "Comedy", costPerDeliv: 0, numDelivs: 0, note: "VFX artist + video creator · Huge engagement potential · Follows DOKi" },
 ];
 
 function buildSeedPipeline() {

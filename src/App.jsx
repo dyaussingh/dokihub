@@ -488,22 +488,33 @@ const I = {
   live: <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#10B981"/></svg>,
 };
 
-// ─── Color Palette ──────────────────────────────────────────────────────────
-const C = {
+// ─── Color Palette (Dark / Light) ───────────────────────────────────────────
+const DARK = {
   bg: "#000000", card: "#121212", cardHover: "#1a1a1a",
   border: "#262626", borderLight: "#363636",
   text: "#F5F5F5", textSec: "#A8A8A8", textMuted: "#737373",
   accent: "#0095F6", accentHover: "#1AA1F7",
   gradient: "linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4)",
   red: "#FF3040", green: "#10B981", yellow: "#F59E0B", purple: "#8B5CF6",
+  sidebarBg: "#0a0a0a",
 };
+const LIGHT = {
+  bg: "#F8F9FA", card: "#FFFFFF", cardHover: "#F0F0F0",
+  border: "#E0E0E0", borderLight: "#D0D0D0",
+  text: "#1A1A1A", textSec: "#555555", textMuted: "#888888",
+  accent: "#0095F6", accentHover: "#007AD6",
+  gradient: "linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4)",
+  red: "#E0243A", green: "#059669", yellow: "#D97706", purple: "#7C3AED",
+  sidebarBg: "#FFFFFF",
+};
+let C = DARK;
 
-const inputBase = {
+const inputBase = () => ({
   width:"100%", background:C.bg, border:`1px solid ${C.border}`,
   borderRadius:10, padding:"10px 12px", color:C.text, fontSize:13,
   outline:"none", fontFamily:"inherit", boxSizing:"border-box",
-};
-const selectBase = { ...inputBase, appearance:"auto" };
+});
+const selectBase = () => ({ ...inputBase(), appearance:"auto" });
 
 // ═══════════════════════════════════════════════════════════════════════════
 // AUTH SCREEN
@@ -550,7 +561,7 @@ function AuthScreen({ onAuth }) {
             onKeyDown={e => e.key === "Enter" && handleLogin()}
             placeholder="Team password"
             style={{
-              ...inputBase, borderRadius: 12, padding: "14px 44px 14px 40px", fontSize: 15,
+              ...inputBase(), borderRadius: 12, padding: "14px 44px 14px 40px", fontSize: 15,
               borderColor: err ? C.red : C.border,
               transition: "border-color 0.3s"
             }}
@@ -729,6 +740,11 @@ function buildSeedPipeline() {
 }
 
 export default function App() {
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("doki_theme") !== "light");
+  C = darkMode ? DARK : LIGHT;
+  const toggleTheme = useCallback(() => {
+    setDarkMode(d => { const next = !d; localStorage.setItem("doki_theme", next ? "dark" : "light"); return next; });
+  }, []);
   const [authed, setAuthed] = useState(() => localStorage.getItem("doki_auth") === "1");
   const [tab, setTab] = useState("discover");
   const [discoveredList, setDiscoveredList] = useState([]);
@@ -792,7 +808,7 @@ export default function App() {
       const entry = Object.values(updated).find(e => e.handle === sp.handle);
       if (entry) {
         if (sp.eng && (!entry.eng || entry.eng === 0)) { entry.eng = sp.eng; dirty = true; }
-        if (sp.niche && entry.niche !== sp.niche && (entry.niche === "—" || entry.niche === "Comedy" && sp.niche !== "Comedy")) { entry.niche = sp.niche; dirty = true; }
+        if (sp.niche && entry.niche !== sp.niche && (entry.niche === "—" || entry.niche === "Lifestyle" || entry.niche === "Fashion" || entry.niche === "Beauty" || (entry.niche === "Comedy" && sp.niche !== "Comedy"))) { entry.niche = sp.niche; dirty = true; }
         if (sp.note) {
           const n = load("doki_notes", {});
           if (!n[entry.id]) { n[entry.id] = sp.note; save("doki_notes", n); }
@@ -865,7 +881,7 @@ export default function App() {
     }}>
       {/* Sidebar Nav */}
       <div style={{
-        width: 220, minHeight: "100vh", background: "#0a0a0a",
+        width: 220, minHeight: "100vh", background: C.sidebarBg,
         borderRight: `1px solid ${C.border}`, display: "flex", flexDirection: "column",
         position: "fixed", top: 0, left: 0, zIndex: 100
       }}>
@@ -917,6 +933,33 @@ export default function App() {
               {tab === t.id && <div style={{ width: 4, height: 16, borderRadius: 2, background: C.accent, marginLeft: "auto" }} />}
             </button>
           ))}
+        </div>
+
+        {/* Dark / Light toggle */}
+        <div style={{ padding: "12px 16px", borderTop: `1px solid ${C.border}` }}>
+          <button onClick={toggleTheme} style={{
+            width: "100%", background: C.card, border: `1px solid ${C.border}`,
+            borderRadius: 10, padding: "8px 12px", cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            color: C.textSec, fontSize: 13, fontFamily: "inherit", transition: "all 0.2s"
+          }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 16 }}>{darkMode ? "\u{1F319}" : "\u{2600}\u{FE0F}"}</span>
+              <span>{darkMode ? "Dark" : "Light"}</span>
+            </span>
+            <div style={{
+              width: 36, height: 20, borderRadius: 10, padding: 2,
+              background: darkMode ? C.accent : C.borderLight,
+              transition: "background 0.2s", display: "flex", alignItems: "center",
+              justifyContent: darkMode ? "flex-end" : "flex-start"
+            }}>
+              <div style={{
+                width: 16, height: 16, borderRadius: "50%",
+                background: "#fff", transition: "all 0.2s",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.3)"
+              }} />
+            </div>
+          </button>
         </div>
       </div>
 
@@ -1601,48 +1644,48 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr", gap: 10 }}>
             <div>
               <Label>Handle *</Label>
-              <input value={newRow.handle} onChange={e => setNewRow(r => ({ ...r, handle: e.target.value }))} placeholder="@handle" style={{ ...inputBase, fontSize: 12 }} onKeyDown={e => e.key === "Enter" && handleAddRow()} />
+              <input value={newRow.handle} onChange={e => setNewRow(r => ({ ...r, handle: e.target.value }))} placeholder="@handle" style={{ ...inputBase(), fontSize: 12 }} onKeyDown={e => e.key === "Enter" && handleAddRow()} />
             </div>
             <div>
               <Label>Name</Label>
-              <input value={newRow.name} onChange={e => setNewRow(r => ({ ...r, name: e.target.value }))} placeholder="Full name" style={{ ...inputBase, fontSize: 12 }} />
+              <input value={newRow.name} onChange={e => setNewRow(r => ({ ...r, name: e.target.value }))} placeholder="Full name" style={{ ...inputBase(), fontSize: 12 }} />
             </div>
             <div>
               <Label>Followers</Label>
-              <input type="number" value={newRow.followers} onChange={e => setNewRow(r => ({ ...r, followers: e.target.value }))} placeholder="e.g. 50000" style={{ ...inputBase, fontSize: 12 }} />
+              <input type="number" value={newRow.followers} onChange={e => setNewRow(r => ({ ...r, followers: e.target.value }))} placeholder="e.g. 50000" style={{ ...inputBase(), fontSize: 12 }} />
             </div>
             <div>
               <Label>Niche</Label>
-              <select value={newRow.niche} onChange={e => setNewRow(r => ({ ...r, niche: e.target.value }))} style={{ ...selectBase, fontSize: 12 }}>
+              <select value={newRow.niche} onChange={e => setNewRow(r => ({ ...r, niche: e.target.value }))} style={{ ...selectBase(), fontSize: 12 }}>
                 <option value="">Select...</option>
                 {NICHES.map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </div>
             <div>
               <Label>Location</Label>
-              <select value={newRow.location} onChange={e => setNewRow(r => ({ ...r, location: e.target.value }))} style={{ ...selectBase, fontSize: 12 }}>
+              <select value={newRow.location} onChange={e => setNewRow(r => ({ ...r, location: e.target.value }))} style={{ ...selectBase(), fontSize: 12 }}>
                 <option value="">Select...</option>
                 {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
               </select>
             </div>
             <div>
               <Label>Cost / Deliverable</Label>
-              <input type="number" value={newRow.costPerDeliv} onChange={e => setNewRow(r => ({ ...r, costPerDeliv: e.target.value }))} placeholder="₹ per video" style={{ ...inputBase, fontSize: 12 }} />
+              <input type="number" value={newRow.costPerDeliv} onChange={e => setNewRow(r => ({ ...r, costPerDeliv: e.target.value }))} placeholder="₹ per video" style={{ ...inputBase(), fontSize: 12 }} />
             </div>
             <div>
               <Label># Deliverables</Label>
-              <input type="number" value={newRow.numDelivs} onChange={e => setNewRow(r => ({ ...r, numDelivs: e.target.value }))} placeholder="1" style={{ ...inputBase, fontSize: 12 }} min="1" />
+              <input type="number" value={newRow.numDelivs} onChange={e => setNewRow(r => ({ ...r, numDelivs: e.target.value }))} placeholder="1" style={{ ...inputBase(), fontSize: 12 }} min="1" />
             </div>
             <div>
               <Label>Assigned To</Label>
-              <select value={newRow.assignedTo} onChange={e => setNewRow(r => ({ ...r, assignedTo: e.target.value }))} style={{ ...selectBase, fontSize: 12 }}>
+              <select value={newRow.assignedTo} onChange={e => setNewRow(r => ({ ...r, assignedTo: e.target.value }))} style={{ ...selectBase(), fontSize: 12 }}>
                 <option value="">Select...</option>
                 {TEAM_MEMBERS.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
             </div>
             <div>
               <Label>Contact / Notes</Label>
-              <input value={newRow.contactInfo} onChange={e => setNewRow(r => ({ ...r, contactInfo: e.target.value }))} placeholder="Phone, email..." style={{ ...inputBase, fontSize: 12 }} />
+              <input value={newRow.contactInfo} onChange={e => setNewRow(r => ({ ...r, contactInfo: e.target.value }))} placeholder="Phone, email..." style={{ ...inputBase(), fontSize: 12 }} />
             </div>
           </div>
           <button onClick={handleAddRow} style={{
@@ -1704,7 +1747,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                       {editingCell?.id === inf.id && editingCell?.field === "name" ? (
                         <input autoFocus value={inf.name} onChange={e => updateField(inf.id, "name", e.target.value)}
                           onBlur={() => setEditingCell(null)} onKeyDown={e => e.key === "Enter" && setEditingCell(null)}
-                          style={{ ...inputBase, padding: "4px 8px", fontSize: 12, width: 120 }} />
+                          style={{ ...inputBase(), padding: "4px 8px", fontSize: 12, width: 120 }} />
                       ) : (
                         <span style={{ cursor: "pointer" }} onClick={() => setEditingCell({ id: inf.id, field: "name" })}>{inf.name || "—"}</span>
                       )}
@@ -1719,7 +1762,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                       {editingCell?.id === inf.id && editingCell?.field === "niche" ? (
                         <select autoFocus value={inf.niche || ""} onChange={e => updateField(inf.id, "niche", e.target.value)}
                           onBlur={() => setEditingCell(null)}
-                          style={{ ...selectBase, padding: "4px 8px", fontSize: 12, width: 130 }}>
+                          style={{ ...selectBase(), padding: "4px 8px", fontSize: 12, width: 130 }}>
                           <option value="—">—</option>
                           {NICHES.map(n => <option key={n} value={n}>{n}</option>)}
                         </select>
@@ -1735,7 +1778,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                             <input autoFocus value={inf.customProblem}
                               onChange={e => updateField(inf.id, "customProblem", e.target.value)}
                               onBlur={() => setEditingCell(null)} onKeyDown={e => e.key === "Enter" && setEditingCell(null)}
-                              style={{ ...inputBase, padding: "4px 8px", fontSize: 11, width: "100%" }} />
+                              style={{ ...inputBase(), padding: "4px 8px", fontSize: 11, width: "100%" }} />
                           ) : (
                             <span style={{ cursor: "pointer" }} onClick={() => setEditingCell({ id: inf.id, field: "customProblem" })}>{inf.customProblem}</span>
                           )
@@ -1745,7 +1788,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                             <input autoFocus defaultValue={np.problem}
                               onChange={e => updateField(inf.id, "customProblem", e.target.value)}
                               onBlur={() => setEditingCell(null)} onKeyDown={e => e.key === "Enter" && setEditingCell(null)}
-                              style={{ ...inputBase, padding: "4px 8px", fontSize: 11, width: "100%" }} />
+                              style={{ ...inputBase(), padding: "4px 8px", fontSize: 11, width: "100%" }} />
                           ) : (
                             <span style={{ cursor: "pointer" }} onClick={() => setEditingCell({ id: inf.id, field: "customProblem" })} title="Click to edit">{np.problem}</span>
                           )
@@ -1755,7 +1798,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                             <input autoFocus value={inf.customProblem || ""}
                               onChange={e => updateField(inf.id, "customProblem", e.target.value)}
                               onBlur={() => setEditingCell(null)} onKeyDown={e => e.key === "Enter" && setEditingCell(null)}
-                              style={{ ...inputBase, padding: "4px 8px", fontSize: 11, width: "100%" }} />
+                              style={{ ...inputBase(), padding: "4px 8px", fontSize: 11, width: "100%" }} />
                           ) : (
                             <span style={{ cursor: "pointer", color: C.textMuted }} onClick={() => setEditingCell({ id: inf.id, field: "customProblem" })}>Click to add...</span>
                           )
@@ -1775,7 +1818,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                       {editingCell?.id === inf.id && editingCell?.field === "location" ? (
                         <select autoFocus value={inf.location || ""} onChange={e => updateField(inf.id, "location", e.target.value)}
                           onBlur={() => setEditingCell(null)}
-                          style={{ ...selectBase, padding: "4px 8px", fontSize: 12, width: 120 }}>
+                          style={{ ...selectBase(), padding: "4px 8px", fontSize: 12, width: 120 }}>
                           <option value="—">—</option>
                           {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
                         </select>
@@ -1799,7 +1842,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                         <input autoFocus type="number" value={inf.costPerDeliv || ""}
                           onChange={e => updateField(inf.id, "costPerDeliv", +e.target.value || 0)}
                           onBlur={() => setEditingCell(null)} onKeyDown={e => e.key === "Enter" && setEditingCell(null)}
-                          style={{ ...inputBase, padding: "4px 8px", fontSize: 12, width: 90 }} />
+                          style={{ ...inputBase(), padding: "4px 8px", fontSize: 12, width: 90 }} />
                       ) : (
                         <span style={{ cursor: "pointer", color: inf.costPerDeliv ? C.text : C.textMuted }}
                           onClick={() => setEditingCell({ id: inf.id, field: "costPerDeliv" })}>
@@ -1812,7 +1855,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                         <input autoFocus type="number" value={inf.numDelivs || ""}
                           onChange={e => updateField(inf.id, "numDelivs", +e.target.value || 0)}
                           onBlur={() => setEditingCell(null)} onKeyDown={e => e.key === "Enter" && setEditingCell(null)}
-                          style={{ ...inputBase, padding: "4px 8px", fontSize: 12, width: 60 }} min="0" />
+                          style={{ ...inputBase(), padding: "4px 8px", fontSize: 12, width: 60 }} min="0" />
                       ) : (
                         <span style={{ cursor: "pointer", color: inf.numDelivs ? C.text : C.textMuted }}
                           onClick={() => setEditingCell({ id: inf.id, field: "numDelivs" })}>
@@ -1834,7 +1877,7 @@ function PipelineTab({ pipeline, setPipeline, updateStage, remove, notes, update
                         <input autoFocus value={note}
                           onChange={e => updateNote(inf.id, e.target.value)}
                           onBlur={() => setEditingCell(null)} onKeyDown={e => e.key === "Enter" && setEditingCell(null)}
-                          style={{ ...inputBase, padding: "4px 8px", fontSize: 12, width: 180 }} />
+                          style={{ ...inputBase(), padding: "4px 8px", fontSize: 12, width: 180 }} />
                       ) : (
                         <span style={{ cursor: "pointer", color: note ? C.textSec : C.textMuted, maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", display: "inline-block" }}
                           onClick={() => setEditingCell({ id: inf.id, field: "notes" })}>
@@ -2115,13 +2158,13 @@ function PipeCard({ inf, onTap, updateStage, remove, notes, updateNote, totalPai
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:10 }}>
             <div>
               <Label>🤝 Collab Post</Label>
-              <select value={collabStatus} onChange={e => updateDeliverable(inf.id, "collabStatus", e.target.value)} style={{ ...selectBase, fontSize:12 }}>
+              <select value={collabStatus} onChange={e => updateDeliverable(inf.id, "collabStatus", e.target.value)} style={{ ...selectBase(), fontSize:12 }}>
                 {DELIV_STATUS.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>
               <Label>📢 Ad Rights</Label>
-              <select value={adStatus} onChange={e => updateDeliverable(inf.id, "adStatus", e.target.value)} style={{ ...selectBase, fontSize:12 }}>
+              <select value={adStatus} onChange={e => updateDeliverable(inf.id, "adStatus", e.target.value)} style={{ ...selectBase(), fontSize:12 }}>
                 {DELIV_STATUS.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
@@ -2129,20 +2172,20 @@ function PipeCard({ inf, onTap, updateStage, remove, notes, updateNote, totalPai
           <div style={{ marginBottom:10 }}>
             <Label>📅 Ad Rights Start Date</Label>
             <input type="date" value={deliverable.adRightsStart || ""} onChange={e => updateDeliverable(inf.id, "adRightsStart", e.target.value)}
-              style={{ ...inputBase, fontSize:12, colorScheme:"dark" }} />
+              style={{ ...inputBase(), fontSize:12, colorScheme: C === DARK ? "dark" : "light" }} />
           </div>
           <div>
             <Label>🏷 Discount Code</Label>
             <input value={discountCode} onChange={e => updateDiscountCode(inf.id, e.target.value.toUpperCase())}
               placeholder={`e.g. DOKI_${inf.handle.replace("@","").toUpperCase().slice(0,8)}`}
-              style={{ ...inputBase, fontSize:12 }} />
+              style={{ ...inputBase(), fontSize:12 }} />
           </div>
         </div>
       )}
 
       {showNote && (
         <textarea value={notes[inf.id]||""} onChange={e => updateNote(inf.id, e.target.value)}
-          placeholder="Add notes..." style={{ ...inputBase, marginTop:10, minHeight:60, resize:"vertical" }} />
+          placeholder="Add notes..." style={{ ...inputBase(), marginTop:10, minHeight:60, resize:"vertical" }} />
       )}
     </div>
   );
@@ -2333,7 +2376,7 @@ function SpendTab({ pipeline, payments, addPayment, removePayment, updatePayment
                       <td style={tdStyle}>
                         {editingCell?.id === p.id && editingCell?.field === "contentType" ? (
                           <select autoFocus value={p.contentType || "Reel"} onChange={e => { updatePayment(p.id, { contentType: e.target.value }); setEditingCell(null); }}
-                            onBlur={() => setEditingCell(null)} style={{ ...selectBase, padding: "4px 8px", fontSize: 12, width: 90 }}>
+                            onBlur={() => setEditingCell(null)} style={{ ...selectBase(), padding: "4px 8px", fontSize: 12, width: 90 }}>
                             {CONTENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                           </select>
                         ) : (
@@ -2350,7 +2393,7 @@ function SpendTab({ pipeline, payments, addPayment, removePayment, updatePayment
                           <input autoFocus type="number" value={p.engagements || ""}
                             onChange={e => updatePayment(p.id, { engagements: +e.target.value || 0 })}
                             onBlur={() => setEditingCell(null)} onKeyDown={e => e.key === "Enter" && setEditingCell(null)}
-                            style={{ ...inputBase, padding: "4px 8px", fontSize: 12, width: 90 }} />
+                            style={{ ...inputBase(), padding: "4px 8px", fontSize: 12, width: 90 }} />
                         ) : (
                           <span style={{ cursor: "pointer", color: p.engagements ? C.text : C.textMuted }}
                             onClick={() => setEditingCell({ id: p.id, field: "engagements" })}>
@@ -2366,7 +2409,7 @@ function SpendTab({ pipeline, payments, addPayment, removePayment, updatePayment
                           <input autoFocus type="number" value={p.revenue || ""}
                             onChange={e => updatePayment(p.id, { revenue: +e.target.value || 0 })}
                             onBlur={() => setEditingCell(null)} onKeyDown={e => e.key === "Enter" && setEditingCell(null)}
-                            style={{ ...inputBase, padding: "4px 8px", fontSize: 12, width: 100 }} />
+                            style={{ ...inputBase(), padding: "4px 8px", fontSize: 12, width: 100 }} />
                         ) : (
                           <span style={{ cursor: "pointer", color: p.revenue ? C.green : C.textMuted }}
                             onClick={() => setEditingCell({ id: p.id, field: "revenue" })}>
@@ -2382,7 +2425,7 @@ function SpendTab({ pipeline, payments, addPayment, removePayment, updatePayment
                           <input autoFocus value={p.note || ""}
                             onChange={e => updatePayment(p.id, { note: e.target.value })}
                             onBlur={() => setEditingCell(null)} onKeyDown={e => e.key === "Enter" && setEditingCell(null)}
-                            style={{ ...inputBase, padding: "4px 8px", fontSize: 12, width: 150 }} />
+                            style={{ ...inputBase(), padding: "4px 8px", fontSize: 12, width: 150 }} />
                         ) : (
                           <span style={{ cursor: "pointer", color: p.note ? C.textSec : C.textMuted }}
                             onClick={() => setEditingCell({ id: p.id, field: "note" })}>
@@ -2648,7 +2691,7 @@ Interested? Let's chat on WhatsApp: 9711888905
               <Label>Notes</Label>
               <textarea value={notes[inf.id]||""} onChange={e => updateNote(inf.id, e.target.value)}
                 placeholder="Pricing, content ideas, contact info..."
-                style={{ ...inputBase, minHeight:70, resize:"vertical" }} />
+                style={{ ...inputBase(), minHeight:70, resize:"vertical" }} />
             </div>
           </>
         )}
@@ -2662,9 +2705,9 @@ function Label({ children, style: s }) {
   return <div style={{ fontSize:12, fontWeight:700, color:C.textSec, textTransform:"uppercase", letterSpacing:1, marginBottom:8, ...s }}>{children}</div>;
 }
 function Sel({ label, value, onChange, options }) {
-  return <div><Label>{label}</Label><select value={value} onChange={e => onChange(e.target.value)} style={selectBase}>
+  return <div><Label>{label}</Label><select value={value} onChange={e => onChange(e.target.value)} style={selectBase()}>
     <option value="">All</option>{options.map(o => <option key={o} value={o}>{o}</option>)}</select></div>;
 }
 function Inp({ label, value, onChange, ph }) {
-  return <div><Label>{label}</Label><input type="number" value={value} onChange={e => onChange(e.target.value)} placeholder={ph} style={inputBase} /></div>;
+  return <div><Label>{label}</Label><input type="number" value={value} onChange={e => onChange(e.target.value)} placeholder={ph} style={inputBase()} /></div>;
 }

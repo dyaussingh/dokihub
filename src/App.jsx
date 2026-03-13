@@ -653,6 +653,14 @@ export default function App() {
         dirty = true;
       }
     });
+    // Remove entries not in the current seed list
+    const seedHandles = SEED_PROSPECTS.map(sp => sp.handle);
+    Object.keys(updated).forEach(id => {
+      if (!seedHandles.includes(updated[id].handle)) {
+        delete updated[id];
+        dirty = true;
+      }
+    });
     // Auto-inject missing prospects
     const handles = Object.values(updated).map(e => e.handle);
     const missing = SEED_PROSPECTS.filter(sp => !handles.includes(sp.handle));

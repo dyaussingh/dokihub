@@ -595,6 +595,7 @@ function AuthScreen({ onAuth }) {
 // ─── Seed Prospects ──────────────────────────────────────────────────────────
 const SEED_PROSPECTS = [
   { handle: "@igvaidified", name: "Dudest of 'em all", followers: 3052, eng: 5600, niche: "Comedy", costPerDeliv: 0, numDelivs: 0, note: "Dopamine Peddler · Viral comedy reels (753K, 886K, 131K views on 3K followers) · Insane organic reach · Following 0 accounts" },
+  { handle: "@teesh.mov", name: "Tanvi Kulkarni", followers: 15500, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0, note: "Fitness + Lifestyle creator · Viral reels (10.5M, 552K, 262K views) · 42 posts · Strong engagement · Travel content (Hong Kong, Spain) · Relatable lifestyle + body transformation content" },
   { handle: "@ishaaan.fit", name: "Ishaan Fit", followers: 2200, eng: 15, niche: "Fitness & Health", costPerDeliv: 10000, numDelivs: 1, note: "Gym POVs + fitness tips + running content · Viral reels (2.6M, 536K, 333K) · Huge reach for nano account" },
   { handle: "@sanikavaid", name: "Sanika Vaid", followers: 8000, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@gauravovereats", name: "Gaurav Makkar", followers: 46200, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0 },

@@ -596,12 +596,12 @@ function AuthScreen({ onAuth }) {
 const SEED_PROSPECTS = [
   { handle: "@igvaidified", name: "Dudest of 'em all", followers: 3052, eng: 5600, niche: "Comedy", costPerDeliv: 0, numDelivs: 0, note: "Dopamine Peddler · Viral comedy reels (753K, 886K, 131K views on 3K followers) · Insane organic reach · Following 0 accounts" },
   { handle: "@teesh.mov", name: "Tanvi Kulkarni", followers: 15500, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0, note: "Fitness + Lifestyle creator · Viral reels (10.5M, 552K, 262K views) · 42 posts · Strong engagement · Travel content (Hong Kong, Spain) · Relatable lifestyle + body transformation content" },
-  { handle: "@ishaaan.fit", name: "Ishaan Fit", followers: 2200, eng: 15, niche: "Fitness & Health", costPerDeliv: 3750, numDelivs: 2, note: "Gym POVs + fitness tips + running content · Viral reels (2.6M, 536K, 333K) · Huge reach for nano account · 7.5K for 2 videos" },
+  { handle: "@ishaaan.fit", name: "Ishaan Fit", followers: 2200, eng: 15, niche: "Fitness & Health", costPerDeliv: 7500, numDelivs: 2, stage: "In Talks", note: "Gym POVs + fitness tips + running content · Viral reels (2.6M, 536K, 333K) · Huge reach for nano account · 7.5K per video, 2 videos" },
   { handle: "@sanikavaid", name: "Sanika Vaid", followers: 8000, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@gauravovereats", name: "Gaurav Makkar", followers: 46200, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0 },
-  { handle: "@coachamogh", name: "Coach Amogh", followers: 2200, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 3, note: "Barter only (free) · 3 videos confirmed" },
-  { handle: "@drharshkanwar", name: "Harsh Kanwar", followers: 75000, niche: "Fitness & Health", costPerDeliv: 50000, numDelivs: 1, note: "Pre-negotiated" },
-  { handle: "@sid.shettyyy", name: "Siddhant Shetty", followers: 18000, niche: "Comedy", costPerDeliv: 18000, numDelivs: 1, note: "Pre-negotiated" },
+  { handle: "@coachamogh", name: "Coach Amogh", followers: 2200, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 3, stage: "In Talks", note: "Barter only (free) · 3 videos confirmed" },
+  { handle: "@drharshkanwar", name: "Harsh Kanwar", followers: 75000, niche: "Fitness & Health", costPerDeliv: 50000, numDelivs: 1, stage: "In Talks", note: "Pre-negotiated" },
+  { handle: "@sid.shettyyy", name: "Siddhant Shetty", followers: 18000, niche: "Comedy", costPerDeliv: 18000, numDelivs: 1, stage: "In Talks", note: "Pre-negotiated" },
   { handle: "@ctrlplusrage", name: "Avinash Vaibhav", followers: 23600, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@aasttha.s", name: "Aasttha Ssidana", followers: 118000, niche: "Fashion & Beauty", costPerDeliv: 0, numDelivs: 0 },
   { handle: "@sheenafit", name: "Sheena Roy", followers: 92200, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0 },
@@ -639,7 +639,7 @@ const SEED_PROSPECTS = [
   { handle: "@anuyeah", name: "Anuya Jakatdar", followers: 10522, niche: "Reading", costPerDeliv: 0, numDelivs: 0, note: "eat, creator · jakatdaranuya@gmail.com · Follows @dokimeats" },
   { handle: "@rossy.dourado", name: "Rossy", followers: 15334, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0, note: "eat · Reel creator · Follows @dokimeats" },
   { handle: "@shashanknawani", name: "Shashank | @The_Himalayan", followers: 19436, niche: "Food & Snacks", costPerDeliv: 0, numDelivs: 0, note: "eat · Personal blog · shashank@withtheflow.in · Follows @dokimeats" },
-  { handle: "@riidawg", name: "Ria Panjabi", followers: 13099, niche: "Reading", costPerDeliv: 15000, numDelivs: 1, note: "eat · Artist · thehotbox.in@gmail.com · Follows @dokimeats · Quoted 15K for 1 video" },
+  { handle: "@riidawg", name: "Ria Panjabi", followers: 13099, niche: "Reading", costPerDeliv: 15000, numDelivs: 1, stage: "In Talks", note: "eat · Artist · thehotbox.in@gmail.com · Follows @dokimeats · Quoted 15K for 1 video" },
   { handle: "@the_march_wallflower", name: "Srija Bhattacharyya", followers: 23571, niche: "Fashion & Beauty", costPerDeliv: 0, numDelivs: 0, note: "Digital creator · Follows @dokimeats" },
   { handle: "@zinbyaastha", name: "Aastha Madaan | Psychologist", followers: 10417, niche: "Wellness", costPerDeliv: 0, numDelivs: 0, note: "Psychologist · contactaastha94@gmail.com · Follows @dokimeats" },
   { handle: "@the_spiritedwoman", name: "Rajni Gill", followers: 10995, niche: "Leadership", costPerDeliv: 0, numDelivs: 0, note: "Business Consultant · Follows @dokimeats" },
@@ -854,7 +854,7 @@ function buildSeedPipeline() {
       niche: p.niche, location: "—",
       posts: 0, following: 0, similarity: 0, verified: false, growth: 0,
       avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(p.name)}&backgroundColor=262626&textColor=ffffff&fontSize=36`,
-      stage: "Prospect", addedAt: Date.now() - (SEED_PROSPECTS.length - i) * 1000,
+      stage: p.stage || "Prospect", addedAt: Date.now() - (SEED_PROSPECTS.length - i) * 1000,
       costPerDeliv: p.costPerDeliv || 0,
       numDelivs: p.numDelivs || 0,
     };
@@ -917,7 +917,7 @@ export default function App() {
         niche: sp.niche || "—", location: "—", posts: 0, following: 0,
         similarity: 0, verified: false, growth: 0,
         avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(sp.handle)}&backgroundColor=262626&textColor=ffffff&fontSize=36`,
-        stage: "Prospect", addedAt: Date.now(),
+        stage: sp.stage || "Prospect", addedAt: Date.now(),
         costPerDeliv: sp.costPerDeliv || 0, numDelivs: sp.numDelivs || 0,
         assignedTo: "",
       };
@@ -933,6 +933,7 @@ export default function App() {
       if (entry) {
         if (sp.eng && (!entry.eng || entry.eng === 0)) { entry.eng = sp.eng; dirty = true; }
         if (sp.niche && entry.niche !== sp.niche && (entry.niche === "—" || entry.niche === "Lifestyle" || entry.niche === "Fashion" || entry.niche === "Beauty" || (entry.niche === "Comedy" && sp.niche !== "Comedy"))) { entry.niche = sp.niche; dirty = true; }
+        if (sp.stage && entry.stage === "Prospect" && sp.stage !== "Prospect") { entry.stage = sp.stage; dirty = true; }
         if (sp.note) {
           const n = load("doki_notes", {});
           if (!n[entry.id]) { n[entry.id] = sp.note; save("doki_notes", n); }

@@ -594,6 +594,7 @@ function AuthScreen({ onAuth }) {
 // ═══════════════════════════════════════════════════════════════════════════
 // ─── Seed Prospects ──────────────────────────────────────────────────────────
 const SEED_PROSPECTS = [
+  { handle: "@reshmatandon29", name: "Reshma Tandon", followers: 33300, niche: "Fashion & Beauty", costPerDeliv: 0, numDelivs: 0, assignedTo: "Dyaus", note: "Personal blog · Mumbai · reshmatandonbiz@gmail.com · Viral reels (1M+, 507K, 55K views) · Avg ~83K views on 33K followers · Beauty & fashion content · 130 posts" },
   { handle: "@igvaidified", name: "Dudest of 'em all", followers: 3052, eng: 5600, niche: "Comedy", costPerDeliv: 0, numDelivs: 0, note: "Dopamine Peddler · Viral comedy reels (753K, 886K, 131K views on 3K followers) · Insane organic reach · Following 0 accounts" },
   { handle: "@teesh.mov", name: "Tanvi Kulkarni", followers: 15500, niche: "Fitness & Health", costPerDeliv: 0, numDelivs: 0, note: "Fitness + Lifestyle creator · Viral reels (10.5M, 552K, 262K views) · 42 posts · Strong engagement · Travel content (Hong Kong, Spain) · Relatable lifestyle + body transformation content" },
   { handle: "@ishaaan.fit", name: "Ishaan Fit", followers: 2200, eng: 15, niche: "Fitness & Health", costPerDeliv: 7500, numDelivs: 2, stage: "In Talks", note: "Gym POVs + fitness tips + running content · Viral reels (2.6M, 536K, 333K) · Huge reach for nano account · 7.5K per video, 2 videos" },
@@ -857,6 +858,7 @@ function buildSeedPipeline() {
       stage: p.stage || "Prospect", addedAt: Date.now() - (SEED_PROSPECTS.length - i) * 1000,
       costPerDeliv: p.costPerDeliv || 0,
       numDelivs: p.numDelivs || 0,
+      assignedTo: p.assignedTo || "",
     };
     if (p.note) notes[id] = p.note;
   });
@@ -919,7 +921,7 @@ export default function App() {
         avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(sp.handle)}&backgroundColor=262626&textColor=ffffff&fontSize=36`,
         stage: sp.stage || "Prospect", addedAt: Date.now(),
         costPerDeliv: sp.costPerDeliv || 0, numDelivs: sp.numDelivs || 0,
-        assignedTo: "",
+        assignedTo: sp.assignedTo || "",
       };
       if (sp.note) {
         const n = load("doki_notes", {});
